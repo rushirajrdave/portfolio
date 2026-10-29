@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIxNzAyNjY1Mzc2MTUxNTMwMzk0NiIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjX2ZhMTdkZjQwZjRiMDMyOWZfcnVzaGlyYWpfZGF2ZV9leGVjdXRpdmVfcG9ydGZvbGlvLmh0bWwtNTE3In0sImV4cCI6MTc5MDQxNzA2NCwiaWF0IjoxNzkwNDEzNDY0LCJhbGciOiJSUzI1NiJ9.Jy_544PWnQef5A1UcdVU3vUjTSdcKrKbA2MkrZxUPsPGIXmLmFZOtt9gIMcWu1GtyOm8lm8ksLUPEEvAqHGpPMw0Xi3-G1yU85H-t4NJ63NmpMCx7RF3VE7W47SocN3a1DcoFjYbbHIYa7x6BZ-EE2m1vd3BaPdq3uutTsZKNMDga5a1WLUsh4HiptibTIOjjmDTcl2glFcYMvIyYv9a00yP24U9YaH955sZSTnUS_yizIE5Ea4Iz_bCzo0SzKN-mZA1Cba-zIuisdbWfLKDD5t6nNVVt65EYBtRzNJqrK0GUCjTW7AEGupeeJk4666jkQykuSSMNF4AuWpGlgK8bQ","c_fa17df40f4b0329f_rushiraj_dave_executive_portfolio.html-517")</script><script data-bard-client-injected="true">
+  document.addEventListener('input', (event) => {
+    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
+      const clonedDoc = document.cloneNode(true);
+      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
+      injectedScripts.forEach(el => el.remove());
+      window.parent.postMessage({
+        type: 'inlineEdit',
+        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
+      }, '*');
+    }
+  });
+</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const SCROLL_KEYS = new Set([
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
+  ]);
+  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
+
+  function isTextEntryTarget(target) {
+    if (!target) return false;
+    const tagName = target.tagName;
+    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
+        tagName === 'SELECT' || target.isContentEditable === true;
+  }
+
+  // An element absorbs the key only if it both overflows on the axis being
+  // scrolled and is configured to scroll on that axis. The cheap dimension
+  // test runs first because getComputedStyle forces a style recalc, and this
+  // runs on every keypress. Each axis is read from its own longhand: the
+  // 'overflow' shorthand serializes as two values when the axes differ, which
+  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
+  function canScroll(node, horizontal) {
+    const overflows = horizontal ? node.scrollWidth > node.clientWidth
+                                 : node.scrollHeight > node.clientHeight;
+    if (!overflows) return false;
+    const style = window.getComputedStyle(node);
+    const overflow = horizontal ? style.overflowX : style.overflowY;
+    return overflow === 'auto' || overflow === 'scroll';
+  }
+
+  // Walks up from the event target so nested scrollers keep their behavior.
+  // <body> is included because pages that pin the root height make it the
+  // scroll container.
+  function hasScrollableAncestor(target, horizontal) {
+    let node = target;
+    while (node && node !== document.documentElement) {
+      if (canScroll(node, horizontal)) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  function rootCanScroll(horizontal) {
+    const scroller = document.scrollingElement || document.documentElement;
+    if (!scroller) return false;
+    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
+    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
+                      : scroller.scrollHeight > window.innerHeight + 1;
+  }
+
+  window.addEventListener('keydown', function(event) {
+    if (!SCROLL_KEYS.has(event.key)) return;
+    if (event.defaultPrevented) return;
+    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
+    // reserved for shortcuts, so none of them are scroll intent.
+    if (event.altKey || event.metaKey || event.ctrlKey) return;
+
+    const target = event.target;
+    if (isTextEntryTarget(target)) return;
+
+    // Anything that can still absorb the scroll gets to keep it.
+    const horizontal = HORIZONTAL_KEYS.has(event.key);
+    if (rootCanScroll(horizontal)) return;
+    if (hasScrollableAncestor(target, horizontal)) return;
+
+    event.preventDefault();
+  }, {capture: true, passive: false});
+})();</script><script data-bard-client-injected="true">(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script data-bard-client-injected="true">
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
+function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
+
+ Copyright The Closure Library Authors.
+ SPDX-License-Identifier: Apache-2.0
+*/
+function A(b,d){function e(){}e.prototype=d.prototype;b.j=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
+let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
+null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.i="";var l=0,t=null,r=null,q=[],F=new TextEncoder,G=new TextDecoder;
+c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*16|0;return(f===
+"x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;(g=t)==null||g.postMessage(a)}};
+Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
+(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
+url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
+</script><script data-bard-client-injected="true">((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
+</script><script data-bard-client-injected="true">(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rushiraj R. Dave | Sales &amp; Business Development Professional</title>
+  <style>
+    /* Reset & Clean System Typography (No CDN dependencies - 100% Offline & WhatsApp proof) */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark: #090e17;
+      --bg-surface: #0f172a;
+      --bg-card: #142036;
+      --bg-card-hover: #1b2a47;
+      --border-subtle: #243556;
+      --border-highlight: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-soft: #cbd5e1;
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --indigo: #6366f1;
+      --amber: #f59e0b;
+      --sky: #38bdf8;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        padding: 36px 24px 80px;
+      }
+    }
+
+    /* Top Sticky Navigation */
+    header {
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 18px;
+    }
+
+    .header-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #10b981);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .brand-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .brand-sub {
+      font-size: 0.74rem;
+      color: #38bdf8;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 15px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      box-shadow: 0 3px 12px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-download:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+      color: var(--text-soft);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      color: #ffffff;
+      border-color: #475569;
+    }
+
+    .btn-email {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+
+    .btn-email:hover {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .btn-linkedin {
+      background: #0a66c2;
+      color: #ffffff;
+    }
+
+    .btn-linkedin:hover {
+      background: #084e96;
+    }
+
+    /* Hero Banner */
+    .hero-card {
+      background: linear-gradient(145deg, #142038, #0c1424);
+      border: 1px solid var(--border-subtle);
+      border-radius: 22px;
+      padding: 30px 22px;
+      margin-bottom: 28px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    @media (min-width: 768px) {
+      .hero-card {
+        padding: 42px 36px;
+      }
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      margin-bottom: 16px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+
+    .hero-name {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    @media (min-width: 768px) {
+      .hero-name {
+        font-size: 3.2rem;
+      }
+    }
+
+    .hero-name span {
+      background: linear-gradient(135deg, #60a5fa, #38bdf8, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Exact Clean Header */
+    .hero-role {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .hero-bio {
+      font-size: 1.02rem;
+      color: var(--text-soft);
+      line-height: 1.7;
+      max-width: 920px;
+      margin-bottom: 24px;
+    }
+
+    /* Contact Action Bar */
+    .contact-action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(11, 17, 32, 0.7);
+      border: 1px solid var(--border-subtle);
+      align-items: center;
+    }
+
+    .contact-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      color: var(--text-soft);
+      padding: 7px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: all 0.2s ease;
+    }
+
+    .contact-item:hover {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+
+    .copy-btn-sm {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      cursor: pointer;
+      color: #38bdf8;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn-sm:hover {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    @media (min-width: 600px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .kpi-number {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .kpi-subtitle {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-soft);
+      text-transform: uppercase;
+    }
+
+    .kpi-footnote {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* 100% SVG Visual Chart Section (WhatsApp & Offline Proof) */
+    .chart-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 24px 18px;
+      margin-bottom: 28px;
+    }
+
+    @media (min-width: 768px) {
+      .chart-section {
+        padding: 32px 28px;
+      }
+    }
+
+    .section-header {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-desc {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .chart-grid {
+        grid-template-columns: 1.55fr 1fr;
+      }
+    }
+
+    .svg-chart-container {
+      background: rgba(11, 17, 32, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .legend-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    .driver-box {
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .driver-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .driver-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .driver-list li {
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.5;
+    }
+
+    .check-icon {
+      color: var(--emerald);
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Core Competencies */
+    .competency-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    @media (min-width: 768px) {
+      .competency-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .competency-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comp-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .comp-summary {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: auto;
+    }
+
+    .tag-pill {
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid var(--border-subtle);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--text-soft);
+    }
+
+    /* Experience */
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .exp-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 22px 18px;
+    }
+
+    @media (min-width: 768px) {
+      .exp-item {
+        padding: 26px 22px;
+      }
+    }
+
+    .exp-header {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .exp-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+    }
+
+    .exp-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .exp-org {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-top: 2px;
+    }
+
+    .exp-date {
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 3px 11px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      width: fit-content;
+      margin-top: 6px;
+    }
+
+    @media (min-width: 600px) {
+      .exp-date {
+        margin-top: 0;
+      }
+    }
+
+    .exp-overview {
+      font-size: 0.88rem;
+      color: var(--text-soft);
+      margin-bottom: 14px;
+    }
+
+    .metric-callouts {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .metric-callouts {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .callout-box {
+      background: rgba(11, 17, 32, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .callout-box strong {
+      color: #ffffff;
+    }
+
+    .award-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-top: 14px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* Education Table */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin-bottom: 32px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.84rem;
+    }
+
+    th {
+      background: rgba(11, 17, 32, 0.95);
+      padding: 14px 16px;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(36, 53, 86, 0.5);
+      color: var(--text-soft);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge-grade {
+      display: inline-flex;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .badge-merit {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .badge-cert {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    /* Contact Card */
+    .contact-card-footer {
+      background: linear-gradient(145deg, #142038, #0c1424);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .contact-card-footer h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .contact-card-footer p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .footer-btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding-top: 16px;
+    }
+
+    /* Toast Notification */
+    #copyToast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #10b981;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 1000;
+    }
+
+    /* Print Overrides */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+      }
+      header, .btn-download, #copyToast, .btn-linkedin {
+        display: none !important;
+      }
+      .hero-card, .kpi-card, .chart-section, .exp-item, .competency-card, .table-container, .contact-action-bar, .contact-card-footer {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+      }
+      .hero-name span {
+        -webkit-text-fill-color: #0f172a !important;
+        color: #0f172a !important;
+      }
+      .text-muted, .text-soft {
+        color: #475569 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Top Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand-block">
+        <div class="avatar-icon">RD</div>
+        <div>
+          <div class="brand-name">RUSHIRAJ R. DAVE</div>
+          <div class="brand-sub">SALES &amp; BUSINESS DEVELOPMENT PROFESSIONAL</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Direct Verified Email Button -->
+        <a href="mailto:rushiraj.r.dave@gmail.com" class="btn btn-email" title="Email Rushiraj">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>Email Me</span>
+        </a>
+
+        <!-- Direct LinkedIn Button -->
+        <a href="https://www.linkedin.com/in/rushirajdave" target="_blank" rel="noopener noreferrer" class="btn btn-linkedin" title="LinkedIn Profile">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path></svg>
+          <span>LinkedIn</span>
+        </a>
+
+        <!-- 1-Click Standalone Offline Download HTML -->
+        <button id="downloadFileBtn" class="btn btn-download" title="Save offline copy">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download HTML</span>
+        </button>
+
+        <!-- Print PDF Button -->
+        <button onclick="window.print()" class="btn btn-secondary" title="Print as PDF">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <span>PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Executive Hero Profile -->
+    <section class="hero-card">
+      <div class="status-badge">
+        <span class="pulse-dot"></span>
+        Commercial Growth &amp; Business Development Specialist
+      </div>
+
+      <h1 class="hero-name">RUSHIRAJ R. <span>DAVE</span></h1>
+      
+      <!-- Critical Exact Header -->
+      <div class="hero-role">
+        SALES &amp; BUSINESS DEVELOPMENT PROFESSIONAL • LONDON / OPEN TO RELOCATION
+      </div>
+
+      <p class="hero-bio">
+        MSc International Business Management graduate (<strong>Oxford Brookes, Merit</strong>) and <strong>CMI Level 7</strong> certified strategist. Demonstrated capability executing high-impact sales initiatives, closing high-value deals, and managing key stakeholder relations across UK and international markets.
+      </p>
+
+      <!-- Active Direct Contact Action Bar -->
+      <div class="contact-action-bar">
+        <!-- Direct Verified Email -->
+        <div class="contact-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <a href="mailto:rushiraj.r.dave@gmail.com"><strong>rushiraj.r.dave@gmail.com</strong></a>
+          <button class="copy-btn-sm" onclick="copyText('rushiraj.r.dave@gmail.com', 'Email copied to clipboard!')">Copy</button>
+        </div>
+
+        <!-- Direct LinkedIn Profile -->
+        <div class="contact-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path></svg>
+          <a href="https://www.linkedin.com/in/rushirajdave" target="_blank" rel="noopener noreferrer"><strong>linkedin.com/in/rushirajdave</strong></a>
+        </div>
+
+        <!-- Location Status -->
+        <div class="contact-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span>London, UK • Open to Relocation</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Key Quantified Metric Cards -->
+    <section class="kpi-grid">
+      <!-- KPI 1 -->
+      <div class="kpi-card" style="border-top: 4px solid var(--emerald);">
+        <div class="kpi-label">Quota Attainment</div>
+        <div>
+          <div class="kpi-number" style="color: #34d399;">156%</div>
+          <div class="kpi-subtitle">£125k Generated vs £80k Target</div>
+        </div>
+        <div class="kpi-footnote">
+          High-value consultative consultations and upselling premium product lines at Mamas &amp; Papas UK.
+        </div>
+      </div>
+
+      <!-- KPI 2 -->
+      <div class="kpi-card" style="border-top: 4px solid var(--indigo);">
+        <div class="kpi-label">Campaign ROI Lift</div>
+        <div>
+          <div class="kpi-number" style="color: #818cf8;">+60%</div>
+          <div class="kpi-subtitle">Footfall &amp; Conversion Expansion</div>
+        </div>
+        <div class="kpi-footnote">
+          Promotional activations and seasonal launches yielding +30% higher footfall and conversions.
+        </div>
+      </div>
+
+      <!-- KPI 3 -->
+      <div class="kpi-card" style="border-top: 4px solid var(--sky);">
+        <div class="kpi-label">Client Assurance</div>
+        <div>
+          <div class="kpi-number" style="color: #38bdf8;">85%+</div>
+          <div class="kpi-subtitle">First-Contact Resolution Rate</div>
+        </div>
+        <div class="kpi-footnote">
+          Managed critical customer relationships &amp; surfaced cross-selling opportunities at IDFC FIRST Bank.
+        </div>
+      </div>
+
+      <!-- KPI 4 -->
+      <div class="kpi-card" style="border-top: 4px solid var(--amber);">
+        <div class="kpi-label">Strategic Credential</div>
+        <div>
+          <div class="kpi-number" style="color: #fbbf24;">Level 7</div>
+          <div class="kpi-subtitle">CMI Strategic Management &amp; Leadership</div>
+        </div>
+        <div class="kpi-footnote">
+          Chartered Management Institute UK postgraduate certification in executive leadership.
+        </div>
+      </div>
+    </section>
+
+    <!-- PURE INLINE SVG VISUAL CHART (100% WhatsApp & Offline Proof - Cannot Break) -->
+    <section class="chart-section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M8 17V12"></path><path d="M12 17V8"></path><path d="M16 17V4"></path></svg>
+          Commercial Performance Acceleration
+        </div>
+        <div class="section-desc">
+          MAMAS &amp; PAPAS UK QUOTA VS ACTUAL (£ GBP)
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <!-- Self-contained SVG Bar Chart (Never turns white or blank inside WhatsApp or local files) -->
+        <div class="svg-chart-container">
+          <div class="chart-legend">
+            <div class="legend-box">
+              <span class="legend-color" style="background: #475569;"></span>
+              <span style="color: #94a3b8;">Store Target: £80,000</span>
+            </div>
+            <div class="legend-box">
+              <span class="legend-color" style="background: #10b981;"></span>
+              <span style="color: #34d399;">Delivered Revenue: £125,000 (156%)</span>
+            </div>
+          </div>
+
+          <svg viewBox="0 0 540 280" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="barTargetGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#64748b"></stop>
+                <stop offset="100%" stop-color="#334155"></stop>
+              </linearGradient>
+              <linearGradient id="barActualGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#34d399"></stop>
+                <stop offset="60%" stop-color="#10b981"></stop>
+                <stop offset="100%" stop-color="#047857"></stop>
+              </linearGradient>
+            </defs>
+
+            <!-- Grid lines & Y Axis marks -->
+            <line x1="60" y1="30" x2="510" y2="30" stroke="#1e293b" stroke-width="1" stroke-dasharray="4"></line>
+            <text x="50" y="34" fill="#64748b" font-size="11" font-weight="600" text-anchor="end">£140k</text>
+
+            <line x1="60" y1="90" x2="510" y2="90" stroke="#1e293b" stroke-width="1" stroke-dasharray="4"></line>
+            <text x="50" y="94" fill="#64748b" font-size="11" font-weight="600" text-anchor="end">£100k</text>
+
+            <!-- Target reference line £80k -->
+            <line x1="60" y1="125" x2="510" y2="125" stroke="#475569" stroke-width="1.5" stroke-dasharray="2"></line>
+            <text x="50" y="129" fill="#94a3b8" font-size="11" font-weight="700" text-anchor="end">£80k</text>
+
+            <line x1="60" y1="180" x2="510" y2="180" stroke="#1e293b" stroke-width="1" stroke-dasharray="4"></line>
+            <text x="50" y="184" fill="#64748b" font-size="11" font-weight="600" text-anchor="end">£40k</text>
+
+            <!-- Base 0 line -->
+            <line x1="60" y1="230" x2="510" y2="230" stroke="#334155" stroke-width="1.5"></line>
+            <text x="50" y="234" fill="#64748b" font-size="11" font-weight="600" text-anchor="end">£0</text>
+
+            <!-- BAR 1: Target £80k -->
+            <rect x="140" y="125" width="90" height="105" rx="8" fill="url(#barTargetGrad)"></rect>
+            <rect x="145" y="95" width="80" height="24" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"></rect>
+            <text x="185" y="111" fill="#cbd5e1" font-size="12" font-weight="700" text-anchor="middle">£80,000</text>
+            <text x="185" y="252" fill="#94a3b8" font-size="12" font-weight="600" text-anchor="middle">Store Target</text>
+
+            <!-- BAR 2: Actual Delivered £125k -->
+            <rect x="330" y="53" width="90" height="177" rx="8" fill="url(#barActualGrad)"></rect>
+            <rect x="320" y="12" width="110" height="34" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1.5"></rect>
+            <text x="375" y="27" fill="#34d399" font-size="12" font-weight="800" text-anchor="middle">£125,000</text>
+            <text x="375" y="40" fill="#a7f3d0" font-size="10" font-weight="700" text-anchor="middle">156% ATTAINMENT</text>
+            <text x="375" y="252" fill="#34d399" font-size="12" font-weight="700" text-anchor="middle">Actual Delivered</text>
+          </svg>
+
+          <!-- Horizontal Attainment Bar -->
+          <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #1e293b;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.74rem; font-weight: 700; color: #94a3b8; margin-bottom: 6px;">
+              <span>TARGET ATTAINMENT INDEX</span>
+              <span style="color: #34d399;">156% (£45k Surplus Generated)</span>
+            </div>
+            <div style="width: 100%; height: 9px; background: #1e293b; border-radius: 9999px; overflow: hidden;">
+              <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 9999px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Commercial Execution Drivers -->
+        <div class="driver-box">
+          <div class="driver-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            Key Commercial Drivers
+          </div>
+          <ul class="driver-list">
+            <li>
+              <span class="check-icon">✓</span>
+              <span><strong>Exceeded target by +£45k</strong> through high-value consultative engagements and premium product positioning.</span>
+            </li>
+            <li>
+              <span class="check-icon">✓</span>
+              <span><strong>Elevated basket size</strong> through structured upselling into high-margin nursery systems and accessories.</span>
+            </li>
+            <li>
+              <span class="check-icon">✓</span>
+              <span><strong>Employee of the Quarter (2026)</strong> for operational standard leadership and team productivity mentoring.</span>
+            </li>
+            <li>
+              <span class="check-icon">✓</span>
+              <span><strong>60% increase in campaign ROI</strong> via strategic promotional activations and launches.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Competencies & Tooling Stack -->
+    <section>
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          Core Competencies &amp; Tooling
+        </div>
+        <div class="section-desc">
+          Strategic enterprise sales, commercial operations, and technical tooling
+        </div>
+      </div>
+
+      <div class="competency-grid">
+        <!-- Sales & Revenue Growth -->
+        <div class="competency-card">
+          <div class="comp-title">Sales &amp; Revenue Growth</div>
+          <div class="comp-summary">Consultative sales execution, high-margin conversion, and client pipeline tracking.</div>
+          <div class="pill-group">
+            <span class="tag-pill">Consultative &amp; Needs-Based Selling</span>
+            <span class="tag-pill">High-Value Account Negotiation</span>
+            <span class="tag-pill">Upselling &amp; Cross-Selling Strategies</span>
+            <span class="tag-pill">Customer Acquisition &amp; Pipeline Tracking</span>
+          </div>
+        </div>
+
+        <!-- Go-to-Market & Commercial Operations -->
+        <div class="competency-card">
+          <div class="comp-title">Go-to-Market &amp; Commercial Operations</div>
+          <div class="comp-summary">Campaign execution, distributor negotiations, and footfall conversion analytics.</div>
+          <div class="pill-group">
+            <span class="tag-pill">B2B &amp; B2C Campaign Execution</span>
+            <span class="tag-pill">Footfall &amp; Conversion Analytics</span>
+            <span class="tag-pill">Vendor &amp; Distributor Negotiations</span>
+            <span class="tag-pill">Cross-Functional Stakeholder Alignment</span>
+          </div>
+        </div>
+
+        <!-- Tech & Analytical Stack -->
+        <div class="competency-card">
+          <div class="comp-title">Tech &amp; Analytical Stack</div>
+          <div class="comp-summary">CRM administration, enterprise analytics, and modern business productivity.</div>
+          <div class="pill-group">
+            <span class="tag-pill">CRM: Salesforce</span>
+            <span class="tag-pill">HubSpot</span>
+            <span class="tag-pill">Zoho</span>
+            <span class="tag-pill">Advanced MS Excel</span>
+            <span class="tag-pill">Business Analytics</span>
+            <span class="tag-pill">Google Digital Marketing &amp; Analytics</span>
+            <span class="tag-pill">AI Productivity &amp; Problem Solving Tools</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Professional Experience -->
+    <section>
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          Professional Experience
+        </div>
+        <div class="section-desc">
+          Documented history of commercial growth and operational leadership
+        </div>
+      </div>
+
+      <div class="exp-list">
+        <!-- Experience 1 -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <div class="exp-title">Senior Store Supervisor</div>
+              <div class="exp-org">MAMAS &amp; PAPAS • UNITED KINGDOM</div>
+            </div>
+            <div class="exp-date">Apr 2024 – Present</div>
+          </div>
+          <div class="exp-overview">
+            Lead sales performance, customer experience, and daily store operations while driving targets and commercial standards.
+          </div>
+          <div class="metric-callouts">
+            <div class="callout-box">
+              <span class="check-icon">✓</span>
+              <div>Delivered <strong>£125k in revenue against an £80k target (156% quota attainment)</strong> through consultative high-value consultations and upselling premium product lines.</div>
+            </div>
+            <div class="callout-box">
+              <span class="check-icon">✓</span>
+              <div>Spearheaded promotional activations and launches, contributing to a <strong>60% increase in campaign ROI</strong> and a <strong>30%+ improvement in footfall and conversions</strong>.</div>
+            </div>
+          </div>
+          <div class="award-banner">
+            <span>🏆</span> Recognized as Employee of the Quarter (2026) for driving team productivity and commercial excellence.
+          </div>
+        </div>
+
+        <!-- Experience 2 -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <div class="exp-title">Client Relations &amp; Service Assurance Executive</div>
+              <div class="exp-org">IDFC FIRST BANK • MUMBAI, INDIA</div>
+            </div>
+            <div class="exp-date">Feb 2022 – Feb 2023</div>
+          </div>
+          <div class="exp-overview">
+            Managed critical customer relationships and high-value enquiries, achieving an <strong>85%+ first-contact resolution rate</strong>.
+          </div>
+          <div class="metric-callouts">
+            <div class="callout-box">
+              <span class="check-icon">✓</span>
+              <div>Maintained an <strong>85%+ first-contact resolution rate</strong>, exceeding client service level benchmarks on institutional accounts.</div>
+            </div>
+            <div class="callout-box">
+              <span class="check-icon">✓</span>
+              <div>Utilized CRM systems to analyze customer KPIs and sentiment to surface <strong>high-probability cross-selling opportunities</strong> across financial products.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience 3 -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <div class="exp-title">Trade Marketing &amp; Procurement Associate</div>
+              <div class="exp-org">MAITRI BODH PARIVAR PVT. LTD. • MUMBAI, INDIA</div>
+            </div>
+            <div class="exp-date">May 2019 – Jan 2021</div>
+          </div>
+          <div class="exp-overview">
+            Directed commercial operations and vendor negotiations, realizing a <strong>20% ROI increase</strong> via strategic pricing and procurement structure.
+          </div>
+          <div class="metric-callouts">
+            <div class="callout-box">
+              <span class="check-icon">✓</span>
+              <div>Realized a <strong>20% ROI increase</strong> through strategic vendor pricing agreements and restructured procurement schedules.</div>
+            </div>
+            <div class="callout-box">
+              <span class="check-icon">✓</span>
+              <div>Managed distribution, merchandise logistics, and seasonal campaign execution with regional distribution partners.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education & Credentials -->
+    <section>
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+          Education &amp; Professional Credentials
+        </div>
+        <div class="section-desc">
+          Academic qualifications in international business management and executive leadership
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Degree / Certification</th>
+              <th>Institution</th>
+              <th>Grade / Distinction</th>
+              <th>Year</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight: 700; color: #ffffff;">MSc International Business Management &amp; Marketing</td>
+              <td>Oxford Brookes University, Oxford, UK</td>
+              <td><span class="badge-grade badge-merit">Merit</span></td>
+              <td>2023 – 2024</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: #ffffff;">CMI Level 7 in Strategic Management &amp; Leadership</td>
+              <td>Chartered Management Institute / Oxford Brookes</td>
+              <td><span class="badge-grade badge-cert">Certified</span></td>
+              <td>2024</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: #ffffff;">Google Digital Marketing &amp; Analytics Certification</td>
+              <td>Google</td>
+              <td><span class="badge-grade badge-cert">Certified</span></td>
+              <td>2021</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: #ffffff;">Premiership in Business Management</td>
+              <td>Mumbai University, India</td>
+              <td>Degree Granted</td>
+              <td>2021</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Direct Contact & Connectivity Card -->
+    <section class="contact-card-footer">
+      <h3>Direct Contact &amp; Engagement</h3>
+      <p>Sales Leadership • Commercial Business Development • UK &amp; International Relocation</p>
+      
+      <div class="footer-btn-row">
+        <!-- Direct Email Link -->
+        <a href="mailto:rushiraj.r.dave@gmail.com" class="btn btn-email">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>rushiraj.r.dave@gmail.com</span>
+        </a>
+
+        <!-- Copy Email Button -->
+        <button class="btn btn-secondary" onclick="copyText('rushiraj.r.dave@gmail.com', 'Email copied to clipboard!')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span>Copy Email</span>
+        </button>
+
+        <!-- Direct LinkedIn Profile Link -->
+        <a href="https://www.linkedin.com/in/rushirajdave" target="_blank" rel="noopener noreferrer" class="btn btn-linkedin">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path></svg>
+          <span>linkedin.com/in/rushirajdave</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer Copyright -->
+    <footer>
+      <p>© 2026 RUSHIRAJ R. DAVE • EXECUTIVE PORTFOLIO &amp; APPLICATION HUB</p>
+      <p style="margin-top: 4px; font-size: 0.72rem; color: #64748b;">
+        Stand-Alone Offline Architecture • Inline Vector Graphics (WhatsApp &amp; Mobile Proof)
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification element -->
+  <div id="copyToast">Copied to clipboard!</div>
+
+  <!-- Self-Contained Download & Clipboard Scripts -->
+  <script>
+    // Copy helper function
+    function copyText(val, message) {
+      var temp = document.createElement("textarea");
+      temp.value = val;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+
+      var toast = document.getElementById('copyToast');
+      if (toast) {
+        toast.innerText = message || "Copied to clipboard!";
+        toast.style.display = 'block';
+        setTimeout(function() {
+          toast.style.display = 'none';
+        }, 2500);
+      }
+    }
+
+    // 1-Click Offline Standalone HTML File Generator
+    document.getElementById('downloadFileBtn').addEventListener('click', function() {
+      try {
+        var completeHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+        var blob = new Blob([completeHtml], { type: 'text/html;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var downloadAnchor = document.createElement('a');
+        downloadAnchor.href = url;
+        downloadAnchor.download = "Rushiraj_R_Dave_Executive_Portfolio.html";
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        document.body.removeChild(downloadAnchor);
+        URL.revokeObjectURL(url);
+
+        copyText('', "HTML file downloaded successfully! Ready to send via WhatsApp.");
+      } catch (err) {
+        console.error("Download failed:", err);
+      }
+    });
+  </script>
+
+</body></html>
